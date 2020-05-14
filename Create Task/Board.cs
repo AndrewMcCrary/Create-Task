@@ -6,10 +6,7 @@
         const int BOARD_Y = 30;
         Cell food;
 
-
         Cell[,] cells = new Cell[BOARD_X, BOARD_Y];
-
-
     }
 
     public struct Cell
@@ -21,7 +18,6 @@
             this.X = x;
             this.Y = y;
         }
-
     }
 
 
