@@ -10,7 +10,9 @@ namespace CreateTask
         const int START_LENGTH = 4;
 
         private List<Body> body;
+        private bool _dead;
 
+        public bool Dead => _dead;
 
         public Snake(
             int StartX = START_X,
@@ -18,15 +20,23 @@ namespace CreateTask
             Direction StartDirection = START_DIRECTION, 
             int StartLength = START_LENGTH)
         {
+            _dead = false;
             // init starting length
 
+            body = new List<Body>
+            {
+                new Body(StartX, StartY, StartDirection)
+            };
 
 
-
-
+            for (int i = 0; i < StartLength - 1; i++)
+                this.AddLength();
         }
 
-
+        public void Kill()
+        {
+            _dead = true;
+        }
 
         public void TurnHead(Direction dir)
         {
@@ -36,6 +46,9 @@ namespace CreateTask
 
         public void MoveAll()
         {
+            if (_dead)
+                return;
+
             for (int i = 0; i < body.Count; i++)
             {
                 switch (body[i].Direction)
@@ -82,7 +95,7 @@ namespace CreateTask
             }
         }
 
-        public struct Body
+        private struct Body
         {
             public int X { get; private set; }
             public int Y { get; private set; }
@@ -119,7 +132,7 @@ namespace CreateTask
             right = 3
         }
 
-        private Direction GetInverse(Direction dir)
+        public Direction GetInverse(Direction dir)
         {
             switch (dir)
             {
