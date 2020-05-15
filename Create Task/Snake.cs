@@ -9,8 +9,10 @@ namespace CreateTask
         const int START_Y = 15;
         const int START_LENGTH = 4;
 
-        private List<Body> body;
+        public List<Body> body;
+        private bool _dead;
 
+        public bool Dead => _dead;
 
         public Snake(
             int StartX = START_X,
@@ -18,15 +20,23 @@ namespace CreateTask
             Direction StartDirection = START_DIRECTION, 
             int StartLength = START_LENGTH)
         {
+            _dead = false;
             // init starting length
 
+            body = new List<Body>
+            {
+                new Body(new Coords(StartX, StartY), StartDirection)
+            };
 
 
-
-
+            for (int i = 0; i < StartLength - 1; i++)
+                this.AddLength();
         }
 
-
+        public void Kill()
+        {
+            _dead = true;
+        }
 
         public void TurnHead(Direction dir)
         {
@@ -36,21 +46,24 @@ namespace CreateTask
 
         public void MoveAll()
         {
+            if (_dead)
+                return;
+
             for (int i = 0; i < body.Count; i++)
             {
                 switch (body[i].Direction)
                 {
                     case Direction.up:
-                        body[i].SetY(body[i].Y + 1);
+                        body[i].Coords.SetY(body[i].Coords.Y + 1);
                         break;
                     case Direction.down:
-                        body[i].SetY(body[i].Y - 1);
+                        body[i].Coords.SetY(body[i].Coords.Y - 1);
                         break;
                     case Direction.left:
-                        body[i].SetX(body[i].X - 1);
+                        body[i].Coords.SetX(body[i].Coords.X - 1);
                         break;
                     case Direction.right:
-                        body[i].SetX(body[i].X + 1);
+                        body[i].Coords.SetX(body[i].Coords.X + 1);
                         break;
                 }
 
@@ -68,46 +81,39 @@ namespace CreateTask
             switch (last.Direction)
             {
                 case Direction.up:
-                    body.Add(new Body(last.X, last.Y - 1, Direction.up));
+                    body.Add(new Body(new Coords(last.Coords.X, last.Coords.Y - 1), Direction.up));
                     break;
                 case Direction.down:
-                    body.Add(new Body(last.X, last.Y + 1, Direction.down));
+                    body.Add(new Body(new Coords(last.Coords.X, last.Coords.Y + 1), Direction.down));
                     break;
                 case Direction.left:
-                    body.Add(new Body(last.X + 1, last.Y, Direction.left));
+                    body.Add(new Body(new Coords(last.Coords.X + 1, last.Coords.Y), Direction.left));
                     break;
                 case Direction.right:
-                    body.Add(new Body(last.X - 1, last.Y, Direction.right));
+                    body.Add(new Body(new Coords(last.Coords.X - 1, last.Coords.Y), Direction.right));
                     break;
             }
         }
 
         public struct Body
         {
-            public int X { get; private set; }
-            public int Y { get; private set; }
-            public Direction Direction { get; set; }
+            public Coords Coords { get; private set; }
+            public Direction Direction { get; private set; }
 
-            public Body(int x, int y, Direction dir)
+            public Body(Coords c, Direction d)
             {
-                this.X = x;
-                this.Y = y;
-                this.Direction = dir;
+                this.Coords = c;
+                this.Direction = d;
             }
 
-            public void SetX(int i)
+            public void SetCoords(Coords c)
             {
-                this.X = i;
+                this.Coords = c;
             }
 
-            public void SetY(int i)
+            public void SetDirection(Direction d)
             {
-                this.Y = i;
-            }
-
-            public void SetDirection(Direction dir)
-            {
-                this.Direction = dir;
+                this.Direction = d;
             }
         }
 
@@ -119,7 +125,7 @@ namespace CreateTask
             right = 3
         }
 
-        private Direction GetInverse(Direction dir)
+        public Direction GetInverse(Direction dir)
         {
             switch (dir)
             {
