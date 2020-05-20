@@ -10,6 +10,9 @@ namespace Create_Task
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("«^ΩOOOOOO»");
+            Console.WriteLine(" OOO");
+            Console.ReadKey();
         }
     }
 }
