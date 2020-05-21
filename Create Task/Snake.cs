@@ -5,9 +5,9 @@ namespace CreateTask
     public class Snake
     {
         const Direction START_DIRECTION = Direction.left;
-        const int START_X = 20;
-        const int START_Y = 15;
-        const int START_LENGTH = 4;
+        const int START_X = 10;
+        const int START_Y = 5;
+        const int START_LENGTH = 6;
 
         public List<Body> body;
         private bool _dead;
@@ -40,8 +40,8 @@ namespace CreateTask
 
         public void TurnHead(Direction dir)
         {
-            if (dir != body[0].Direction && dir != GetInverse(dir))
-                body[0].SetDirection(dir);
+            if (dir != body[0].Direction && body[0].Direction != GetInverse(dir))
+                body[0] = new Body(body[0].Coords, dir);
         }
 
         public void MoveAll()
@@ -49,26 +49,36 @@ namespace CreateTask
             if (_dead)
                 return;
 
-            for (int i = 0; i < body.Count; i++)
+            for (int i = body.Count - 1; i >= 0; i--)
             {
                 switch (body[i].Direction)
                 {
                     case Direction.up:
-                        body[i].Coords.SetY(body[i].Coords.Y + 1);
+                        body[i] = new Body(new Coords(body[i].Coords.X, body[i].Coords.Y - 1), Direction.up);
                         break;
                     case Direction.down:
-                        body[i].Coords.SetY(body[i].Coords.Y - 1);
+                        body[i] = new Body(new Coords(body[i].Coords.X, body[i].Coords.Y + 1), Direction.down);
                         break;
                     case Direction.left:
-                        body[i].Coords.SetX(body[i].Coords.X - 1);
+                        body[i] = new Body(new Coords(body[i].Coords.X - 1, body[i].Coords.Y), Direction.left);
                         break;
                     case Direction.right:
-                        body[i].Coords.SetX(body[i].Coords.X + 1);
+                        body[i] = new Body(new Coords(body[i].Coords.X + 1, body[i].Coords.Y), Direction.right);
                         break;
                 }
 
+                for (int j = 2; j < body.Count; j++)
+                {
+                    if (body[0].Coords.Equals(body[j].Coords))
+                    {
+                        Kill();
+                        return;
+                    }
+                }
+
+
                 if (i != 0)
-                    body[i].SetDirection(body[i - 1].Direction);
+                    body[i] = new Body(body[i].Coords, body[i - 1].Direction);
             }
         }
 
@@ -81,10 +91,10 @@ namespace CreateTask
             switch (last.Direction)
             {
                 case Direction.up:
-                    body.Add(new Body(new Coords(last.Coords.X, last.Coords.Y - 1), Direction.up));
+                    body.Add(new Body(new Coords(last.Coords.X, last.Coords.Y + 1), Direction.up));
                     break;
                 case Direction.down:
-                    body.Add(new Body(new Coords(last.Coords.X, last.Coords.Y + 1), Direction.down));
+                    body.Add(new Body(new Coords(last.Coords.X, last.Coords.Y - 1), Direction.down));
                     break;
                 case Direction.left:
                     body.Add(new Body(new Coords(last.Coords.X + 1, last.Coords.Y), Direction.left));
@@ -97,7 +107,7 @@ namespace CreateTask
 
         public struct Body
         {
-            public Coords Coords { get; private set; }
+            public Coords Coords { get; set; }
             public Direction Direction { get; private set; }
 
             public Body(Coords c, Direction d)
@@ -130,17 +140,13 @@ namespace CreateTask
             switch (dir)
             {
                 case Direction.up:
-                    dir = Direction.down;
-                    break;
+                    return Direction.down;
                 case Direction.down:
-                    dir = Direction.up;
-                    break;
+                    return Direction.up;
                 case Direction.left:
-                    dir = Direction.right;
-                    break;
+                    return Direction.right;
                 case Direction.right:
-                    dir = Direction.left;
-                    break;
+                    return Direction.left;
             }
             return dir;
         }
